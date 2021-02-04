@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss, KLDivLoss
+from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss, L1Loss
 from transformers import (
     BertModel,
     BertPreTrainedModel,
@@ -710,7 +710,7 @@ class ElectraForMultiOutputRegression(ElectraPreTrainedModel):
         outputs = (logits,) + outputs[2:]
         if labels is not None:
             # print('outputs before', outputs)
-            loss_fct = KLDivLoss()
+            loss_fct = L1Loss()
             labels = labels.float()
             # print('labels: ', labels)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1, self.num_labels))
