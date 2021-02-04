@@ -1511,7 +1511,9 @@ class ClassificationModel:
                             tmp_eval_loss, logits = outputs[:2]
 
                         if multi_label:
+                            print('before sigmoid: ', logits)
                             logits = logits.sigmoid()
+                            print('after sigmoid: ', logits)
 
                         if self.args.n_gpu > 1:
                             tmp_eval_loss = tmp_eval_loss.mean()
@@ -1559,6 +1561,7 @@ class ClassificationModel:
             else:
                 model_outputs = preds
                 if multi_label:
+                    print('before thresholding: ', preds)
                     if isinstance(args.threshold, list):
                         threshold_values = args.threshold
                         preds = [
@@ -1567,6 +1570,7 @@ class ClassificationModel:
                         ]
                     else:
                         preds = [[self._threshold(pred, args.threshold) for pred in example] for example in preds]
+                    print('after thresholding: ', preds)
                 else:
                     preds = np.argmax(preds, axis=1)
 

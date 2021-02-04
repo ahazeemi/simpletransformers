@@ -709,10 +709,14 @@ class ElectraForMultiOutputRegression(ElectraPreTrainedModel):
 
         outputs = (logits,) + outputs[2:]
         if labels is not None:
+            print('TRAINING_DATA------------------')
             loss_fct = MSELoss()
             labels = labels.float()
+            print('labels: ', labels)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1, self.num_labels))
+            print('loss: ', loss)
             outputs = (loss,) + outputs
+            print('outputs: ', outputs)
 
         return outputs
 
