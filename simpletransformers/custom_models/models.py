@@ -715,7 +715,7 @@ class ElectraForMultiOutputRegression(ElectraPreTrainedModel):
             print('labels: ', labels)
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1, self.num_labels))
             print('loss: ', loss)
-            outputs = (loss,) + outputs
+            outputs = loss + outputs
             print('outputs after: ', outputs)
 
         return outputs
