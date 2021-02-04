@@ -671,6 +671,52 @@ class ElectraForMultiLabelSequenceClassification(ElectraPreTrainedModel):
         return outputs
 
 
+class ElectraForMultiOutputRegression(ElectraPreTrainedModel):
+    """
+    ElectraForSequenceClassification model adapted for multi-output regression
+    """
+
+    config_class = ElectraConfig
+    pretrained_model_archive_map = ELECTRA_PRETRAINED_MODEL_ARCHIVE_LIST
+    base_model_prefix = "electra"
+
+    def __init__(self, config, pos_weight=None):
+        super(ElectraForMultiOutputRegression, self).__init__(config)
+        self.num_labels = config.num_labels
+        self.pos_weight = pos_weight
+
+        self.electra = ElectraModel(config)
+        self.pooler = ElectraPooler(config)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.classifier = nn.Linear(config.hidden_size, self.config.num_labels)
+
+    def forward(
+        self,
+        input_ids=None,
+        attention_mask=None,
+        token_type_ids=None,
+        position_ids=None,
+        head_mask=None,
+        inputs_embeds=None,
+        labels=None,
+    ):
+
+        outputs = self.electra(input_ids, attention_mask, token_type_ids, position_ids, head_mask, inputs_embeds)
+        sequence_output = outputs[0]
+        pooled_output = self.pooler(sequence_output)
+        pooled_output = self.dropout(pooled_output)
+        logits = self.classifier(pooled_output)
+
+        outputs = (logits,) + outputs[2:]
+        if labels is not None:
+            loss_fct = MSELoss()
+            labels = labels.float()
+            loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1, self.num_labels))
+            outputs = (loss,) + outputs
+
+        return outputs
+
+
 class ElectraForQuestionAnswering(ElectraPreTrainedModel):
     """
     Identical to BertForQuestionAnswering other than using an ElectraModel
