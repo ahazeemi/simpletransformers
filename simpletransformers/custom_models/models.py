@@ -618,7 +618,7 @@ class ElectraForSequenceClassification(ElectraPreTrainedModel):
                 loss_fct = MSELoss()
                 loss = loss_fct(logits.view(-1), labels.view(-1))
             else:
-                loss_fct = CrossEntropyLoss(weight=self.weight)
+                loss_fct = MSELoss()
                 # loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
                 loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1, self.num_labels))
             outputs = (loss,) + outputs
